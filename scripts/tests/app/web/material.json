@@ -1,0 +1,8 @@
+{
+  "target": ["web"],
+  "ui": "material",
+  "layout": "simple",
+  "features": ["cypress"],
+  "location": "hash",
+  "tools": ["jest"]
+}

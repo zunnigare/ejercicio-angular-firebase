@@ -1,0 +1,14 @@
+{
+  "projects": {
+    "default": "ejercicio-angular-76065"
+  },
+  "targets": {
+    "ejercicio-angular-76065": {
+      "hosting": {
+        "ngx-ejercicio": [
+          "ejercicio-angular-76065"
+        ]
+      }
+    }
+  }
+}

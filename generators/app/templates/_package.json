@@ -1,0 +1,258 @@
+<% const run = command => `${props.packageManager} run ${command}${props.packageManager === 'npm' ? ' -s' : ''}` -%>
+{
+  "name": "<%= props.projectName %>",
+  "version": "1.0.0",
+  "private": true,
+  <% if (props.target.includes('electron')) { -%>
+     "main": "electron.main.js",
+  <% } -%>
+  "scripts": {
+    "ng": "ng",
+    "build": "<%= run('write:env') %> && ng build",
+    "start": "<%= run('write:env') %> && ng serve --proxy-config proxy.conf.js",
+<% if (props.deploy !== 'none') { -%>
+    "deploy": "<%= run('write:env') %> && ng deploy",
+<% } -%>
+<% if (props.pwa) { -%>
+    "serve:sw": "<%= run('build') %> && npx http-server ./<%= props.target.includes('cordova') ? 'www': 'dist' %> -p 4200",
+<% } -%>
+    "lint": "ng lint && stylelint \"src/**/*.scss\"",
+    "test": "<%= run('write:env') %> && ng test",
+    "test:ci": "<%= run('write:env') %> && <%= run('lint') %> && ng test --configuration=ci",
+<% if (props.e2e || props.cypress) { -%>
+    "e2e": "<%= run('write:env') %> && ng e2e",
+<% } -%>
+<% if (props.cypress) { -%>
+    "cypress:open": "<%= run('write:env') %> && ng run <%= props.projectName %>:cypress-open",
+    "cypress:run": "<%= run('write:env') %> && ng run <%= props.projectName %>:cypress-run",
+<% } -%>
+    "translations:extract": "ngx-translate-extract --input ./src --output ./src/translations/template.json --format=json --clean --sort",
+<% if (props.tools.includes('hads')) { -%>
+    "docs": "hads ./docs -o",
+<% } -%>
+<% if (props.tools.includes('compodoc')) { -%>
+    "compodoc": "compodoc -p tsconfig.json -d docs/generated -s -o",
+<% } -%>
+    "write:env": "ngx-scripts env npm_package_version",
+<% if (props.tools.includes('prettier')) { -%>
+    "prettier": "prettier --write \"./src/**/*.{ts,js,html,scss}\"",
+    "prettier:check": "prettier --list-different \"./src/**/*.{ts,js,html,scss}\"",
+<%   if (options.git) { -%>
+    "postinstall": "<%= run('prettier') %> && husky install",
+<%   } else { -%>
+    "postinstall": "<%= run('prettier') %>",
+<%   } -%>
+<% } -%>
+<% if (props.target.includes('cordova')) { -%>
+    "cordova:prepare": "ngx-scripts cordova prepare",
+    "cordova:run": "ngx-scripts cordova run",
+    "cordova:build": "ngx-scripts cordova build --device --release --copy dist",
+    "cordova:clean": "ngx-scripts clean",
+    "cordova": "cordova",
+<% } -%>
+<% if (props.target.includes('electron')) { -%>
+    "electron:compile": "tsc --project tsconfig.electron.json",
+    "electron:run": "<%= run('electron:compile') %> && electron .",
+    "electron:build": "<%= run('electron:compile') %> && <%= run('write:env') %> && ng build --base-href ./ --output-path dist-electron",
+    "electron:package:common": "electron-packager . --overwrite --out=dist-packages --ignore=\"/(platforms|plugins|docs|www|reports|src)\"",
+<%   if (props.desktop.includes('windows')) { -%>
+    "electron:package:windows": "<%= run('electron:package:common') %> -- --platform=win32 --arch=x64 --icon=./resources/win/icon.ico",
+<%   } -%>
+<%   if (props.desktop.includes('mac')) { -%>
+    "electron:package:mac": "<%= run('electron:package:common') %> -- --platform=darwin --icon=./resources/mac/icon.icns",
+<%   } -%>
+<%   if (props.desktop.includes('linux')) { -%>
+    "electron:package:linux": "<%= run('electron:package:common') %> --platform=linux",
+<%   } -%>
+    "electron:package": "<%- props.desktop.reduce((out, platform) => (out ? out + ' && ' : '') + run('electron:package:' + platform), null) %>",
+<% } -%>
+    "generate": "ng generate"
+  },
+  "dependencies": {
+    "@angular/animations": "~13.1.0",
+    "@angular/common": "~13.1.0",
+    "@angular/compiler": "~13.1.0",
+    "@angular/core": "~13.1.0",
+    "@angular/forms": "~13.1.0",
+<%   if (props.ui === 'bootstrap' || props.ui === 'material') { -%>
+    "@angular/localize": "~13.1.0",
+<%   } -%>
+    "@angular/platform-browser": "~13.1.0",
+    "@angular/platform-browser-dynamic": "~13.1.0",
+    "@angular/router": "~13.1.0",
+    "@ngx-translate/core": "^14.0.0",
+<% if (props.target.includes('cordova')) { -%>
+    "@awesome-cordova-plugins/core": "^5.30.0",
+    "@awesome-cordova-plugins/keyboard": "^5.30.0",
+    "@awesome-cordova-plugins/splash-screen": "^5.30.0",
+    "@awesome-cordova-plugins/status-bar": "^5.30.0",
+    "cordova-android": "^10.1.1",
+    "cordova-custom-config": "^5.1.0",
+    "cordova-ios": "^6.2.0",
+    "cordova-plugin-device": "^2.0.3",
+    "cordova-plugin-ionic-webview": "^5.0.0",
+    "cordova-plugin-ionic-keyboard": "^2.2.0",
+    "cordova-plugin-splashscreen": "^6.0.0",
+    "cordova-plugin-statusbar": "^3.0.0",
+<% } -%>
+<% if (props.pwa) { -%>
+    "@angular/service-worker": "~13.1.0",
+<% } -%>
+<% if (props.ui === 'ionic') { -%>
+    "@ionic/angular": "^6.0.0",
+<% } else if (props.ui === 'bootstrap') { -%>
+    "@ng-bootstrap/ng-bootstrap": "^12.0.0-beta.4",
+    "@popperjs/core": "^2.11.0",
+    "bootstrap": "^5.0.2",
+    "@fortawesome/fontawesome-free": "^5.15.1",
+<% } else if (props.ui === 'material') { -%>
+    "@angular/cdk": "~13.1.0",
+    "@angular/material": "~13.1.0",
+    "@angular/flex-layout": "^13.0.0-beta.36",
+    "material-design-icons-iconfont": "^6.1.0",
+<% } -%>
+<% if (props.angulartics) { -%>
+    "angulartics2": "^11.0.0",
+<% } -%>
+<% if (props.utility.includes('lodash')) { -%>
+    "lodash": "^4.17.20",
+<% } -%>
+<% if (props.utility.includes('ramda')) { -%>
+    "ramda": "^0.27.1",
+<% } -%>
+<% if (props.utility.includes('moment')) { -%>
+    "moment": "^2.29.1",
+<% } -%>
+<% if (props.utility.includes('datefns')) { -%>
+    "date-fns": "^2.16.1",
+<% } -%>
+    "rxjs": "^7.4.0",
+    "tslib": "^2.3.0",
+    "zone.js": "~0.11.4"
+  },
+  "devDependencies": {
+<% if (props.target.includes('cordova')) { -%>
+    "cordova": "^10.0.0",
+<% } -%>
+<% if (props.tools.includes('jest')) { -%>
+    "@angular-builders/jest": "^13.0.0",
+<% } -%>
+    "@angular-devkit/build-angular": "~13.1.0",
+    "@angular-eslint/builder": "~13.0.1",
+    "@angular-eslint/eslint-plugin": "~13.0.1",
+    "@angular-eslint/eslint-plugin-template": "~13.0.1",
+    "@angular-eslint/schematics": "~13.0.1",
+    "@angular-eslint/template-parser": "~13.0.1",
+    "@angular/cli": "~13.1.0",
+    "@angular/compiler-cli": "~13.1.0",
+    "@angular/language-service": "~13.1.0",
+    "@biesbjerg/ngx-translate-extract": "^7.0.3",
+    "@biesbjerg/ngx-translate-extract-marker": "^1.0.0",
+    "@ngx-rocket/scripts": "^5.2.1",
+<% if (props.cypress) { -%>
+    "@cypress/schematic": "^1.5.0",
+    "cypress": "~9.1.1",
+<% } -%>
+    "@ngneat/until-destroy": "^9.0.0",
+    "@typescript-eslint/eslint-plugin": "~5.6.0",
+    "@typescript-eslint/parser": "~5.6.0",
+<% if (!props.tools.includes('jest') || props.e2e) { -%>
+    "@types/jasmine": "^3.6.2",
+    "@types/jasminewd2": "^2.0.8",
+<% } -%>
+<% if (props.tools.includes('jest')) { -%>
+    "@types/jest": "^27.0.3",
+<% } -%>
+    "@types/node": "^12.20.37",
+<% if (props.utility.includes('lodash')) { -%>
+    "@types/lodash": "^4.14.165",
+<% } -%>
+<% if (props.utility.includes('ramda')) { -%>
+    "@types/ramda": "^0.27.34",
+<% } -%>
+<% if (props.target.includes('electron')) { -%>
+    "electron": "^16.0.2",
+    "electron-packager": "^15.1.0",
+    "electron-reload": "^1.5.0",
+<% } -%>
+    "eslint": "^8.3.0",
+    "eslint-plugin-import": "latest",
+    "eslint-plugin-jsdoc": "latest",
+    "eslint-plugin-prefer-arrow": "latest",
+<% if (props.tools.includes('hads')) { -%>
+    "hads": "^3.0.0",
+<% } -%>
+<% if (props.tools.includes('compodoc')) { -%>
+    "@compodoc/compodoc": "^1.1.11",
+<% } -%>
+    "htmlhint": "^1.0.0",
+    "https-proxy-agent": "^5.0.0",
+<% if (!props.tools.includes('jest') || props.e2e) { -%>
+    "jasmine-core": "~3.8.0",
+    "jasmine-spec-reporter": "~7.0.0",
+<% } -%>
+<% if (props.tools.includes('jest')) { -%>
+    "jest": "^27.0.6",
+    "ts-jest": "^27.0.5",
+<% } else { -%>
+    "karma": "~6.3.0",
+    "karma-chrome-launcher": "~3.1.0",
+    "karma-coverage": "~2.1.0",
+    "karma-jasmine": "~4.0.1",
+    "karma-jasmine-html-reporter": "~1.7.0",
+    "karma-junit-reporter": "^2.0.1",
+<% } -%>
+<% if (props.tools.includes('prettier')) { -%>
+    "prettier": "^2.2.1",
+    "stylelint-config-prettier": "^9.0.3",
+<%   if (options.git) { -%>
+    "pretty-quick": "^3.1.0",
+    "husky": "^7.0.1",
+<%   } -%>
+<% } -%>
+<% if (props.e2e) { -%>
+    "protractor": "~7.0.0",
+<% } -%>
+<% if (props.tools.includes('puppeteer')) { -%>
+    "puppeteer": "^12.0.1",
+<% } -%>
+    "stylelint": "~14.1.0",
+    "stylelint-config-recommended-scss": "~5.0.2",
+    "stylelint-config-standard": "~24.0.0",
+    "postcss": "^8.4.5",
+    "ts-node": "^10.1.0",
+    "typescript": "~4.4.3"
+<% if (props.tools.includes('prettier')) { -%>
+  },
+  "prettier": {
+    "singleQuote": true,
+    "overrides": [
+      {
+        "files": "*.scss",
+        "options": {
+          "singleQuote": false
+        }
+      }
+    ]
+<% } -%>
+<% if (props.target.includes('cordova')) { -%>
+  },
+  "resolutions": {
+    "webpack": "^5.0.0"
+  },
+  "cordova": {
+    "platforms": [
+      "android",
+      "ios"
+    ],
+    "plugins": {
+      "cordova-custom-config": {},
+      "cordova-plugin-device": {},
+      "cordova-plugin-splashscreen": {},
+      "cordova-plugin-statusbar": {},
+      "cordova-plugin-ionic-webview": {},
+      "cordova-plugin-ionic-keyboard": {}
+    }
+<% } -%>
+  }
+}

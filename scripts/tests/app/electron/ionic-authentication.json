@@ -1,0 +1,8 @@
+{
+  "target": ["electron"],
+  "desktop": ["windows", "mac", "linux"],
+  "ui": "ionic",
+  "layout": "tabs",
+  "features": ["auth"],
+  "tools": ["protractor"]
+}

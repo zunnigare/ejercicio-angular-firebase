@@ -1,0 +1,6 @@
+{
+  "target": ["web"],
+  "ui": "material",
+  "layout": "simple",
+  "features": ["pwa", "auth", "cypress"]
+}

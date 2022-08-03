@@ -1,0 +1,6 @@
+{
+  "target": ["web"],
+  "ui": "bootstrap",
+  "features": ["pwa", "auth"],
+  "tools": ["prettier", "hads", "jest"]
+}

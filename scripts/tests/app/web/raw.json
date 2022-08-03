@@ -1,0 +1,8 @@
+{
+  "target": ["web"],
+  "ui": "raw",
+  "features": ["angulartics", "cypress"],
+  "analyticsProvider": "other",
+  "tools": ["compodoc", "jest"],
+  "utility": ["lodash", "moment"]
+}

@@ -1,0 +1,8 @@
+{
+  "target": ["cordova"],
+  "mobile": ["ios", "android"],
+  "ui": "ionic",
+  "layout": "tabs",
+  "features": ["auth"],
+  "tools": ["jest"]
+}

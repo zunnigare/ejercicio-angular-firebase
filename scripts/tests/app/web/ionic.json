@@ -1,0 +1,6 @@
+{
+  "target": ["web"],
+  "ui": "ionic",
+  "layout": "tabs",
+  "features": ["lazy", "cypress"]
+}

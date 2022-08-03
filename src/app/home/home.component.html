@@ -1,0 +1,23 @@
+<form [formGroup]="formulario" (ngSubmit)="onSubmit()">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-auto mb-5">Ingrese un dato</div>
+    </div>
+    <div class="row justify-content-center">
+      <div class="col-auto mb-5">
+        <input class="form-insert form-control-lg" type="number" id="dato_ingresado" formControlName="dato_ingresado" placeholder="Ingrese un número" />
+      </div>
+    </div>
+    <div class="row justify-content-center">
+      <div class="col-auto mb-5">
+        <input class="form-control-lg" type="text" id="dato_generado" formControlName="dato_generado" value=""/>
+      </div>
+    </div>
+    <div class="row justify-content-center">
+      <div class="col-auto mb-5">
+        <button type="submit" class="btn btn-outline-secondary btn-lg">Calcular</button>
+      </div>
+    </div>
+  </div>
+</form>
+<script src="../../../scripts/functions/functions.js"></script>

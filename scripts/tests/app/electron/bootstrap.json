@@ -1,0 +1,6 @@
+{
+  "target": ["electron"],
+  "desktop": ["windows", "mac", "linux"],
+  "ui": "bootstrap",
+  "features": ["auth"]
+}

@@ -1,0 +1,8 @@
+{
+  "target": ["cordova"],
+  "mobile": ["ios", "android"],
+  "ui": "bootstrap",
+  "features": ["auth", "cypress"],
+  "strict": true,
+  "tools": ["jest"]
+}

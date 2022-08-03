@@ -1,0 +1,8 @@
+{
+  "target": ["web"],
+  "ui": "ionic",
+  "layout": "side-menu",
+  "features": ["pwa", "auth", "lazy", "cypress"],
+  "location": "hash",
+  "tools": ["jest"]
+}
